@@ -15,6 +15,24 @@
     <button ng-click="retractPerson(data.explore.resource)"
             ng-disabled="data.explore.resource.people == 0">-</button>
 </div>
-<div ng-repeat="area in data.explore.areas">
-    Oo a {{ area.name }}
+<div class="row">
+    <div ng-repeat="area in data.explore.areas" class="col-sm-1 task">
+        <uib-progressbar class="progress"
+                         max="area.duration"
+                         value="area.durationSpent">
+                         <span>{{area.name}}</span>
+        </uib-progressbar>
+        <uib-progressbar class="progress"
+                         type="success"
+                         max="area.ticks"
+                         value="area.ticksSpent">
+                         <span>Explored</span>
+        </uib-progressbar>
+        <button class="plus"
+                ng-click="assignPerson(area)"
+                ng-disabled="data.people.free == 0">+</button>
+        <button class="minus"
+                ng-click="retractPerson(area)"
+                ng-disabled="area.people == 0">-</button>
+    </div>
 </div>

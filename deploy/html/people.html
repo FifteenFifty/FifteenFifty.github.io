@@ -5,3 +5,13 @@
 <div>
     <span>Available: {{data.people.free}}</span>
 </div>
+<h3>Resources</h3>
+<div>
+    <span>Food:     {{data.resource.food}}</span>
+</div>
+<div>
+    <span>Water:    {{data.resource.water}}</span>
+</div>
+<div>
+    <span ng-hide="data.resource.currency == 0">Currency: {{data.resource.currency}}</span>
+</div>

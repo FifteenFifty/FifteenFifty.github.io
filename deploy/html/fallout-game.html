@@ -9,25 +9,4 @@
         </div>
       </div>
     </div>
-
-  <h1>Widgets: <span id="widget-count">{{numWidgets | number: 0}}</span></h1>
-
-  <button class="btn btn-primary" id="produce-widget" ng-click="produceWidget()">Produce Widget</button>
-
-  <h2>Store:</h2>
-
-  <button id="novice-widgeteer" ng-click="hireNoviceWidgeteer()" ng-disabled="noviceWidgeteerCost > numWidgets">Hire Novice Widgeteer - {{noviceWidgeteerCost}}</button>
-
-  <button id="master-widgeteer" ng-click="hireMasterWidgeteer()" ng-disabled="masterWidgeteerCost > numWidgets">Hire Master Widgeteer - {{masterWidgeteerCost}}</button>
-
-  <h2>Coding exercises:</h2>
-
-  <ul>
-    <li>Change the starting costs and see how it affects the game</li>
-    <li>Add two more levels of widgeteers</li>
-    <li>Add stats near the top showing widgets per second and the number of widgeteers of each type</li>
-    <li>Add an upgrades section</li>
-    <li>Add save/load buttons that use localStorage.setItem() and localStorage.getItem()</li>
-    <li>Check the Bootstrap 3 checkbox in the upper left and change the &lt;button&gt; elements to use &lt;div class="btn btn-primary"&gt; instead</li>
-  </ul>
 </div>

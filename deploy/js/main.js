@@ -17,6 +17,11 @@ app.controller('IncrementalCtrl',
             },
             areas: [
             ]
+        },
+        resource: {
+            food:     100,
+            water:    100,
+            currency: 0
         }
     }
 
@@ -41,6 +46,24 @@ app.controller('IncrementalCtrl',
         }
     }
 
+    function AddArea(tier) {
+        $scope.data.explore.areas.push(
+            {
+                name:     "Garage",
+                resource: {
+                    food:     100,
+                    water:    100,
+                    currency: 100
+                },
+                duration:      2,
+                durationSpent: 0,
+                ticks:         5,
+                ticksSpent:    0,
+                people:        0
+            }
+        )
+    }
+
     // Run UI update code every 10ms
     $interval(function() {
         var tickScale = 1/6000; // Tick every 10ms, and 1 second = 1 minutes
@@ -48,18 +71,43 @@ app.controller('IncrementalCtrl',
         var moreExplored =
            $scope.exploreSpeed($scope.data.explore.resource.people) * tickScale;
 
+        lastGarageKms += moreExplored
+
 
         //More people explore faster, with diminishing returns
         $scope.data.explore.progress.current += moreExplored
+    }, 10);
 
-        lastGarageKms += moreExplored
+    // Run event triggers every second
+    $interval(function() {
 
-        if (lastGarageKms > Math.random() * maxGarageKms / tickScale) {
-            $scope.data.explore.areas.push({name: "garage"})
+        if ($scope.data.explore.resource.people > 0 &&
+            lastGarageKms > Math.random() * maxGarageKms) {
+            AddArea(1)
             lastGarageKms = 0
         }
 
+        $scope.data.resource.food  -= $scope.data.explore.resource.people
+        $scope.data.resource.water -= $scope.data.explore.resource.people
 
-    }, 10);
+        $scope.data.explore.areas.forEach(
+            function(area, index) {
+                area.durationSpent += area.people
+
+                if (area.durationSpent > area.duration) {
+                    area.durationSpent = 0
+                    area.ticksSpent += 1
+            //TODO - assign resources
+                    if (area.ticksSpent > area.ticks) {
+                        // Finished - remove all people and the area
+                        while (area.people > 0) {
+                            $scope.retractPerson(area)
+                        }
+                        $scope.data.explore.areas.splice(index, 1)
+                    }
+                }
+            });
+
+    }, 1000);
   });
 
