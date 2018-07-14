@@ -1,0 +1,20 @@
+<span>Wasteland (Total). {{data.explore.progress.max - data.explore.progress.current | number : 2}}km unexplored</span>
+<uib-progressbar max="data.explore.progress.max"
+                 value="data.explore.progress.current">
+                 <span>{{(data.explore.progress.current * 100) / data.explore.progress.max | number : 2}}%</span>
+</uib-progressbar>
+<div>
+    <span>Explorers: {{data.explore.resource.people | number}}</span>
+</div>
+<div>
+    <span>Explore speed: {{exploreSpeed(data.explore.resource.people) | number : 2}}km/h</span>
+</div>
+<div>
+    <button ng-click="assignPerson(data.explore.resource)"
+            ng-disabled="data.people.free == 0">+</button>
+    <button ng-click="retractPerson(data.explore.resource)"
+            ng-disabled="data.explore.resource.people == 0">-</button>
+</div>
+<div ng-repeat="area in data.explore.areas">
+    Oo a {{ area.name }}
+</div>
