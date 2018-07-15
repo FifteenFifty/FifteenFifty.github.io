@@ -4,12 +4,14 @@ app.controller('IncrementalCtrl',
   function($scope, $interval) {
     $scope.data = {
         people: {
-            total: 1,
-            free:  1
+            total: 10,
+            free:  10
         },
         explore: {
             resource: {
-                people: 0
+                people: {
+                    total: 0
+                }
             },
             progress: {
                 current: 0,
@@ -22,7 +24,55 @@ app.controller('IncrementalCtrl',
             food:     100,
             water:    100,
             currency: 0
+        },
+        overmind: {
+            autoExplore: {
+                people: {
+                    total: 0,
+                    free:  0
+                }
+            }
         }
+    }
+
+    var areas = {
+        1: [
+            {
+                name:     "Garage",
+                resource: {
+                    food:     10,
+                    water:    10,
+                    currency: 10
+                },
+                scavenge: {
+                    car: 0.15
+                },
+                duration:      5,
+                durationSpent: 0,
+                ticks:         3,
+                ticksSpent:    0,
+                people:        {
+                    total:  0,
+                    robots: 0
+                }
+            },
+            {
+                name:     "House",
+                resource: {
+                    food:     100,
+                    water:    100,
+                    currency: 100
+                },
+                duration:      10,
+                durationSpent: 0,
+                ticks:         10,
+                ticksSpent:    0,
+                people:        {
+                    total:  0,
+                    robots: 0
+                }
+            }
+        ]
     }
 
     lastGarageKms = 0;
@@ -32,47 +82,56 @@ app.controller('IncrementalCtrl',
         return Math.sqrt(people) * 2.5
     }
 
-    $scope.assignPerson = function(where) {
-        if ($scope.data.people.free > 0) {
-            where.people++
-            $scope.data.people.free--
-        }
-    }
-
-    $scope.retractPerson = function(where) {
-        if (where.people > 0) {
-            where.people--
-            $scope.data.people.free++
+    $scope.assignPerson = function(from, to, count) {
+        if ((count > 0 && from.free >= count) ||
+            (count < 0 && to.total >= count)) {
+            to.total += count
+            to.free  += count
+            from.free -= count
         }
     }
 
     function AddArea(tier) {
-        $scope.data.explore.areas.push(
-            {
-                name:     "Garage",
-                resource: {
-                    food:     100,
-                    water:    100,
-                    currency: 100
-                },
-                duration:      2,
-                durationSpent: 0,
-                ticks:         5,
-                ticksSpent:    0,
-                people:        0
-            }
-        )
+        // Select a random area from the tier to add
+        var toAdd = angular.copy(areas[tier][Math.floor(Math.random() *
+                                                        areas[tier].length)])
+        for (let r of Object.keys(toAdd.resource)) {
+            toAdd.resource[r] = Math.ceil(Math.random() * toAdd.resource[r])
+        }
+        $scope.data.explore.areas.push(toAdd)
     }
 
     // Run UI update code every 10ms
     $interval(function() {
+        var tps = 1/100;
         var tickScale = 1/6000; // Tick every 10ms, and 1 second = 1 minutes
 
         var moreExplored =
-           $scope.exploreSpeed($scope.data.explore.resource.people) * tickScale;
+           $scope.exploreSpeed($scope.data.explore.resource.people.total) * tickScale;
 
         lastGarageKms += moreExplored
 
+        $scope.data.explore.areas.forEach(
+            function(area, index) {
+                area.durationSpent += (area.people.total + area.people.robots) * tps
+
+                if (area.durationSpent > area.duration) {
+                    area.durationSpent = 0
+                    area.ticksSpent += 1
+
+                    $scope.data.resource.food     += area.resource.food
+                    $scope.data.resource.water    += area.resource.water
+                    $scope.data.resource.currency += area.resource.currency
+
+                    if (area.ticksSpent > area.ticks) {
+                        // Finished - remove all assigned people, robots, and
+                        // the area
+                        $scope.data.people.free                      += area.people.total
+                        $scope.data.overmind.autoExplore.people.free += area.people.robots
+                        $scope.data.explore.areas.splice(index, 1)
+                    }
+                }
+            });
 
         //More people explore faster, with diminishing returns
         $scope.data.explore.progress.current += moreExplored
@@ -81,33 +140,36 @@ app.controller('IncrementalCtrl',
     // Run event triggers every second
     $interval(function() {
 
-        if ($scope.data.explore.resource.people > 0 &&
+        if ($scope.data.explore.resource.people.total > 0 &&
             lastGarageKms > Math.random() * maxGarageKms) {
             AddArea(1)
             lastGarageKms = 0
         }
 
-        $scope.data.resource.food  -= $scope.data.explore.resource.people
-        $scope.data.resource.water -= $scope.data.explore.resource.people
-
-        $scope.data.explore.areas.forEach(
-            function(area, index) {
-                area.durationSpent += area.people
-
-                if (area.durationSpent > area.duration) {
-                    area.durationSpent = 0
-                    area.ticksSpent += 1
-            //TODO - assign resources
-                    if (area.ticksSpent > area.ticks) {
-                        // Finished - remove all people and the area
-                        while (area.people > 0) {
-                            $scope.retractPerson(area)
-                        }
-                        $scope.data.explore.areas.splice(index, 1)
-                    }
-                }
+        // If there are free exploring robots, assign them
+        var unexplored = $scope.data.explore.areas.some(
+            function(area) {
+                return (area.people.total + area.people.robots) == 0;
             });
 
+        $scope.data.explore.areas.some(
+            function(area) {
+                // If we're only assigning to unexplored, then skip in progress
+                // areas
+                if ((unexplored == ((area.people.total + area.people.robots) == 0)) &&
+                    $scope.data.overmind.autoExplore.people.free > 0) {
+
+                    area.people.robots++
+                    $scope.data.overmind.autoExplore.people.free--
+                }
+
+                return $scope.data.overmind.autoExplore.people.free == 0
+            });
+
+        var workers = $scope.data.people.total - $scope.data.people.free
+
+        $scope.data.resource.food  -= workers
+        $scope.data.resource.water -= workers
     }, 1000);
   });
 

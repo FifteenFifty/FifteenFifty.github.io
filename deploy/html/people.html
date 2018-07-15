@@ -15,3 +15,9 @@
 <div>
     <span ng-hide="data.resource.currency == 0">Currency: {{data.resource.currency}}</span>
 </div>
+<h3>Robots</h3>
+<div>
+    <span>Explorers: {{data.overmind.autoExplore.people.total}}</span>
+    <button ng-click="assignPerson(data.people, data.overmind.autoExplore.people, 1)"
+            ng-disabled="data.people.free == 0">+</button>
+</div>
