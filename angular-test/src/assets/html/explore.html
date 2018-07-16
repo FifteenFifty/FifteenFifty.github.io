@@ -1,0 +1,39 @@
+<span>Wasteland (Total). {{data.explore.progress.max - data.explore.progress.current | number : 2}}km unexplored</span>
+<uib-progressbar max="data.explore.progress.max"
+                 value="data.explore.progress.current">
+                 <span>{{(data.explore.progress.current * 100) / data.explore.progress.max | number : 2}}%</span>
+</uib-progressbar>
+<div>
+    <span>Explorers: {{data.explore.resource.people.total | number}}</span>
+</div>
+<div>
+    <span>Explore speed: {{exploreSpeed(data.explore.resource.people.total) | number : 2}}km/h</span>
+</div>
+<div>
+    <button ng-click="assignPerson(data.people, data.explore.resource.people, 1)"
+            ng-disabled="data.people.free == 0">+</button>
+    <button ng-click="assignPerson(data.people, data.explore.resource.people, -1)"
+            ng-disabled="data.explore.resource.people.total == 0">-</button>
+</div>
+<div class="row">
+    <div ng-repeat="area in data.explore.areas" class="col-md-2 col-lg-1 task">
+        <uib-progressbar class="progress"
+                         animate="false"
+                         max="area.duration"
+                         value="area.durationSpent">
+                         <span>{{area.name}}</span>
+        </uib-progressbar>
+        <uib-progressbar class="progress"
+                         type="success"
+                         max="area.ticks"
+                         value="area.ticksSpent">
+                         <span>Explored</span>
+        </uib-progressbar>
+        <button class="plus"
+                ng-click="assignPerson(data.people, area.people, 1)"
+                ng-disabled="data.people.free == 0">+</button>
+        <button class="minus"
+                ng-click="assignPerson(data.people, area.people, -1)"
+                ng-disabled="area.people.total == 0">-</button>
+    </div>
+</div>

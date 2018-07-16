@@ -1,0 +1,26 @@
+<h2>People</h2>
+<div>
+    <span>Total: {{data.people.total}}</span>
+</div>
+<div>
+    <span>Available: {{data.people.free}}</span>
+</div>
+<h3>Resources</h3>
+<div ng-repeat="(key, value) in data.resource"
+     ng-hide="value == 0">
+     <span>{{key}}: {{value}}</span>
+</div>
+<h3>Robots</h3>
+<div>
+    <span>Explorers: {{data.overmind.autoExplore.people.total}}</span>
+    <button ng-click="assignPerson(data.people, data.overmind.autoExplore.people, 1)"
+            ng-disabled="data.people.free == 0">+</button>
+</div>
+<h3>Stats</h3>
+<div>
+    <strong>Explored</strong>
+</div>
+<div ng-repeat="(key, value) in data.stats.explored"
+     ng-hide="value == 0">
+    <span>{{key}}: {{value}}</span>
+</div>
