@@ -1,1 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
+.progress {
+    position: relative;
+}
+
+.progress span {
+    position: absolute;
+    display:  block;
+    width:    100%;
+    color:    black;
+}
+
+.progress-bar-success {
+    background-color: green;
+}

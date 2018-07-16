@@ -25,7 +25,9 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+                "assets/js/ui-bootstrap-tpls-2.5.0.min.js",
+                "assets/js/main.js"]
           },
           "configurations": {
             "production": {
