@@ -32,12 +32,34 @@ app.controller('IncrementalCtrl',
                     free:  0
                 }
             }
+        },
+        scavenge: {
+        },
+        stats: {
+            explored: {
+                Garage: 0,
+                House:  0
+            }
+        }
+    }
+
+    var scavenge = {
+        car: {
+            name: "Car",
+            resource: {
+                steel:     10,
+                circuitry: 1
+            },
+            duration:      20,
+            durationSpent: 0,
+            ticks:         20,
+            ticksSpent:    0
         }
     }
 
     var areas = {
-        1: [
-            {
+        1: {
+            garage: {
                 name:     "Garage",
                 resource: {
                     food:     10,
@@ -56,7 +78,7 @@ app.controller('IncrementalCtrl',
                     robots: 0
                 }
             },
-            {
+            house: {
                 name:     "House",
                 resource: {
                     food:     100,
@@ -72,7 +94,7 @@ app.controller('IncrementalCtrl',
                     robots: 0
                 }
             }
-        ]
+        }
     }
 
     lastGarageKms = 0;
@@ -93,8 +115,10 @@ app.controller('IncrementalCtrl',
 
     function AddArea(tier) {
         // Select a random area from the tier to add
-        var toAdd = angular.copy(areas[tier][Math.floor(Math.random() *
-                                                        areas[tier].length)])
+        var keys = Object.keys(areas[tier])
+        var toAdd = angular.copy(areas[tier][keys[Math.floor(Math.random() *
+                                                  keys.length)]])
+
         for (let r of Object.keys(toAdd.resource)) {
             toAdd.resource[r] = Math.ceil(Math.random() * toAdd.resource[r])
         }
@@ -126,9 +150,16 @@ app.controller('IncrementalCtrl',
                     if (area.ticksSpent > area.ticks) {
                         // Finished - remove all assigned people, robots, and
                         // the area
-                        $scope.data.people.free                      += area.people.total
-                        $scope.data.overmind.autoExplore.people.free += area.people.robots
+                        $scope.data
+                              .people
+                              .free        += area.people.total
+                        $scope.data
+                              .overmind
+                              .autoExplore
+                              .people
+                              .free        += area.people.robots
                         $scope.data.explore.areas.splice(index, 1)
+                        $scope.data.stats.explored[area.name]++
                     }
                 }
             });
