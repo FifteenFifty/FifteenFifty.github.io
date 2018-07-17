@@ -10,6 +10,6 @@
     color:    black;
 }
 
-.progress-bar-success {
-    background-color: green;
+.notransition div {
+    transition: none !important;
 }

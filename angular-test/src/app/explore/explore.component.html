@@ -1,0 +1,40 @@
+<span>Wasteland (Total). {{data.explore.progress.max - data.explore.progress.current | number:'1.2-2'}}km unexplored</span>
+<ngb-progressbar [value]="data.explore.progress.current"
+                 [max]="data.explore.progress.max"
+                 Type="success">
+    <span>{{(data.explore.progress.current * 100) / data.explore.progress.max | number :'1.2-2'}}%</span>
+</ngb-progressbar>
+<div>
+    <span>Explorers: {{data.explore.resource.people.total | number:'1.2-2'}}</span>
+</div>
+<div>
+    <span>Explore speed: {{dataService.exploreSpeed(data.explore.resource.people.total) | number:'1.2-2'}}km/h</span>
+</div>
+<div>
+    <button (click)="dataService.assignPerson(data.people, data.explore.resource.people, 1)"
+            [disabled]="data.people.free == 0">+</button>
+    <button (click)="dataService.assignPerson(data.people, data.explore.resource.people, -1)"
+            [disabled]="data.explore.resource.people.total == 0">-</button>
+</div>
+<div class="row">
+    <div *ngFor="let area of data.explore.areas" class="col-md-2 col-lg-1 task">
+        <ngb-progressbar class="notransition"
+                         type="info"
+                         animate="false"
+                         [value]="area.durationSpent"
+                         [max]="area.duration">
+            <span>{{area.name | titlecase}}</span>
+        </ngb-progressbar>
+        <ngb-progressbar type="success"
+                         [value]="area.ticksSpent"
+                         [max]="area.ticks">
+            <span>Explored</span>
+        </ngb-progressbar>
+        <button class="plus"
+                (click)="dataService.assignPerson(data.people, area.people, 1)"
+                [disabled]="data.people.free == 0">+</button>
+        <button class="minus"
+                (click)="dataService.assignPerson(data.people, area.people, -1)"
+                [disabled]="area.people.total == 0">-</button>
+    </div>
+</div>

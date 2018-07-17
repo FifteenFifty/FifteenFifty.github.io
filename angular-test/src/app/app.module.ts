@@ -3,16 +3,16 @@ import { NgModule } from '@angular/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppComponent } from './app.component';
-import { GameComponent } from './game/game.component';
 import { ResourceComponent } from './resource/resource.component';
 import { KeysPipe } from './keys.pipe';
+import { ExploreComponent } from './explore/explore.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    GameComponent,
     ResourceComponent,
-    KeysPipe
+    KeysPipe,
+    ExploreComponent,
   ],
   imports: [
       BrowserModule,
